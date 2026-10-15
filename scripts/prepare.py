@@ -80,7 +80,11 @@ def main():
         (target / 'preview-info.json').write_text(json.dumps(pr, ensure_ascii=False), encoding='utf-8')
         title = html.escape(pr['title'])
         short = pr['sha'][:7]
-        rows.append(f'<li><h2><a href="pr-{pr["number"]}/">PR #{pr["number"]} · {title}</a></h2><p>commit {short}</p><p><a href="pr-{pr["number"]}/LifeSketch/">LifeSketch Gallery</a> · <a href="pr-{pr["number"]}/LifeSketch/001_doremi-pipes/">ドレミパイプを遊ぶ</a></p></li>')
+        links = []
+        for path, label in [('LifeSketch/', 'LifeSketch Gallery'), ('LifeSketch/001_doremi-pipes/', 'ドレミパイプを遊ぶ')]:
+            if (target / path / 'index.html').is_file():
+                links.append(f'<a href="pr-{pr["number"]}/{path}">{label}</a>')
+        rows.append(f'<li><h2><a href="pr-{pr["number"]}/">PR #{pr["number"]} · {title}</a></h2><p>commit {short}</p><p>' + ' · '.join(links) + '</p></li>')
     (OUT / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding='utf-8')
     (OUT / '.nojekyll').touch()
     updated = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
